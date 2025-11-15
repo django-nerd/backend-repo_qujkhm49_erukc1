@@ -12,7 +12,7 @@ Model name is converted to lowercase for the collection name:
 """
 
 from pydantic import BaseModel, Field
-from typing import Optional
+from typing import Optional, List
 
 # Example schemas (replace with your own):
 
@@ -38,8 +38,34 @@ class Product(BaseModel):
     category: str = Field(..., description="Product category")
     in_stock: bool = Field(True, description="Whether product is in stock")
 
-# Add your own schemas here:
-# --------------------------------------------------
+# Food Delivery App Schemas
+
+class Restaurant(BaseModel):
+    name: str = Field(..., description="Restaurant name")
+    cuisine: str = Field(..., description="Cuisine type")
+    rating: float = Field(4.5, ge=0, le=5, description="Average rating")
+    delivery_time_min: int = Field(30, ge=5, le=120, description="Estimated delivery time in minutes")
+    image_url: Optional[str] = Field(None, description="Cover image URL")
+
+class MenuItem(BaseModel):
+    restaurant_id: str = Field(..., description="Associated restaurant id as string")
+    title: str = Field(..., description="Dish name")
+    description: Optional[str] = Field(None, description="Dish description")
+    price: float = Field(..., ge=0, description="Price in dollars")
+    image_url: Optional[str] = Field(None, description="Dish image URL")
+    vegetarian: bool = Field(False, description="Is vegetarian")
+
+class OrderItem(BaseModel):
+    menu_item_id: str = Field(..., description="Menu item id as string")
+    quantity: int = Field(1, ge=1, description="Quantity")
+
+class Order(BaseModel):
+    customer_name: str = Field(..., description="Customer name")
+    address: str = Field(..., description="Delivery address")
+    restaurant_id: str = Field(..., description="Restaurant id as string")
+    items: List[OrderItem] = Field(..., description="Ordered items")
+    total: float = Field(0, ge=0, description="Order total amount")
+    status: str = Field("placed", description="Order status")
 
 # Note: The Flames database viewer will automatically:
 # 1. Read these schemas from GET /schema endpoint
